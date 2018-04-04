@@ -5,12 +5,12 @@ public class Facility
     public double pricePerHour;
     public String decommissionedUntilDate;
 
-    public Track(int facilityID, String facilityName, double pricePerHour, String decommissionedUntilDate)
+    public Facility(int facilityID, String facilityName, double pricePerHour, String decommissionedUntilDate)
     {
         this.facilityName = facilityName;
         this.decommissionedUntilDate = decommissionedUntilDate;
         this.facilityID = facilityID;
-        this.decommissionedUntilDate = decommissionedUntilDate;
+        this.pricePerHour = pricePerHour;
     }
 
     public String getFacilityName()
@@ -25,7 +25,7 @@ public class Facility
     {
         return  decommissionedUntilDate;
     }
-    public void setDecommissionedUntilDate(String artist)
+    public void setDecommissionedUntilDate(String decommissionedUntilDate)
     {
         this.decommissionedUntilDate = decommissionedUntilDate;
     }
@@ -33,7 +33,7 @@ public class Facility
     {
         return  facilityID;
     }
-    public void setFacilityID(int year)
+    public void setFacilityID(int facilityID)
     {
         this.facilityID = facilityID;
     }
