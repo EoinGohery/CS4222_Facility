@@ -8,17 +8,17 @@ public class Driver
   private static final String[] subAdmin = { "View Availabilty", "Add Booking", "Decommission Facility", "Remove Facility", "Record Payment" };
   private static final String[] mainUser = { "View Bookings","View Statement" };
   private static final String[] facilities = { };
-  private boolean loggedIn = false;
-  private boolean Admin = false;
+  private static boolean loggedIn = false;
+  private static boolean admin = false;
 
   public static void main(String[] args) throws IOException
   {
     readUser();
     readBooking();
     readFacility();
-    while (loggedIn = false)
+    while (!loggedIn)
     {
-      Login();
+      login();
     }
     boolean main = true;
     if (admin)
@@ -26,10 +26,11 @@ public class Driver
       while (main) {
         String section = (String) JOptionPane.showInputDialog(null, "Menu","",JOptionPane.QUESTION_MESSAGE, null, mainAdmin, mainAdmin[0]);
         if(section=="Register a New User") {
-            createUser();
+          createUser();
         }else if(section=="Add Facility") {
-            createFacility();
+          createFacility();
         }else if(section=="View Facilities") {
+          chooseFacility();
           boolean sub = true;
           while (sub) {
               String subSection = (String) JOptionPane.showInputDialog(null, "Menu","",JOptionPane.QUESTION_MESSAGE, null, subAdmin, subAdmin[0]);
@@ -54,6 +55,7 @@ public class Driver
           }
         } else if(section=="View User Statements")
         {
+            chooseUser();
             viewStatement();
         } else
           main = false;
@@ -72,5 +74,80 @@ public class Driver
    }
    JOptionPane.showMessageDialog(null, "You have been logged out");
    System.exit(0);
+  }
+
+  public static void readUser()
+  {
+
+  }
+
+  public static void readBooking()
+  {
+
+  }
+
+  public static void readFacility()
+  {
+
+  }
+
+  public static void createUser()
+  {
+
+  }
+
+  public static void login()
+  {
+
+  }
+
+  public static void createFacility()
+  {
+
+  }
+
+  public static void viewAvailabilty()
+  {
+
+  }
+
+  public static void addBooking()
+  {
+
+  }
+
+  public static void decommissionFacility()
+  {
+
+  }
+
+  public static void removeFacility()
+  {
+
+  }
+
+  public static void recordPayment()
+  {
+
+  }
+
+  public static void viewStatement()
+  {
+
+  }
+
+  public static void chooseUser()
+  {
+
+  }
+
+  public static void chooseFacility()
+  {
+
+  }
+
+  public static void viewBookings()
+  {
+
   }
 }
