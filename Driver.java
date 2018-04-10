@@ -88,7 +88,7 @@ public class Driver
 
   public static void readUser()  throws IOException
   {
-	  	PrintWriter  pw = new PrintWriter(new FileWriter(userInfo,true));
+	  PrintWriter  pw = new PrintWriter(new FileWriter(userInfo,true));
 		String lineFromFile;
 		int i = -1;
     String fileElements[];
