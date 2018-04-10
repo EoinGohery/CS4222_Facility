@@ -7,9 +7,10 @@ public class Driver
   private static final String[] mainAdmin = { "Register a New User", "Add Facility", "View Facilities", "View User Statements", "Log Out" };
   private static final String[] subAdmin = { "View Availabilty", "Add Booking", "Decommission Facility", "Remove Facility", "Record Payment" };
   private static final String[] mainUser = { "View Bookings","View Statement" };
-  ArrayList<String> facilityList = new ArrayList<String>();
   private static boolean loggedIn = false;
   private static boolean admin = false;
+  public static int currentFacilityNum;
+  public static int currentUserNum;
   private static File userInfo = new File ("userInfo.txt");
   private static File bookingInfo = new File ("bookings.txt");
   private static File facilityInfo = new File ("facilities.txt");
@@ -262,12 +263,59 @@ public class Driver
 
   public static void chooseUser()
   {
-
+    String email;
+    ArrayList<String> userList = new ArrayList<String>();
+    for (int i=0; i<users.size(); i++)
+    {
+      email = users.get(i).getEmail();
+      userList.add(email);
+    }
+    Object[] userArray = userList.toArray();
+    email = (String) JOptionPane.showInputDialog(null, "Menu","",JOptionPane.QUESTION_MESSAGE, null, userArray, userArray[0]);
+    if ((email != null) && (email.length() > 0))
+    {
+      for (int i=0; i<users.size(); i++)
+      {
+          if (email.equals(users.get(i).getFacilityName()))
+          {
+             currentUserNum = i;
+             break;
+          }
+      }
+    } else
+    {
+      return;
+    }
   }
 
-  public static void chooseFacility()
+  public static void chooseFacility() throws IOException
   {
-
+      String facilityName;
+      ArrayList<String> facilityList = new ArrayList<String>();
+      for (int i=0; i<facilities.size(); i++)
+      {
+        facilityName = facilities.get(i).getFacilityName();
+        if ((facilityName != null) && (facilityName.length() > 0))
+        {
+          facilityList.add(facilityName);
+        }
+      }
+      Object[] facilityArray = facilityList.toArray();
+      facilityName = (String) JOptionPane.showInputDialog(null, "Menu","",JOptionPane.QUESTION_MESSAGE, null, facilityArray, facilityArray[0]);
+      if ((facilityName != null) && (facilityName.length() > 0))
+      {
+        for (int i=0; i<facilities.size(); i++)
+    	  {
+    		    if (facilityName.equals(facilities.get(i).getFacilityName()))
+    		    {
+    			     currentFacilityNum = i;
+               break;
+    		    }
+    	  }
+      } else
+      {
+        return;
+      }
   }
 
   public static void viewBookings()
