@@ -16,6 +16,9 @@ public class Driver
   public static List<Facility> facilities = new ArrayList<Facility>();
   public static List<User> users = new ArrayList<User>();
   public static List<Booking> bookings = new ArrayList<Booking>();
+  public static Facility nullFacility = new Facility(0, null, 0.0, null);
+  public static User nullUser = new User(0, null, null, 0);
+  public static Booking nullBooking = new Booking(0, 0, 0, 0, null, null);
 
   public static void main(String[] args) throws IOException
   {
@@ -95,7 +98,7 @@ public class Driver
     String password;
 		Scanner read = new Scanner(userInfo);
 		while(read.hasNext())
-		{	
+		{
 			i++;
 			lineFromFile = read.nextLine();
 			fileElements = lineFromFile.split(",");
@@ -103,11 +106,10 @@ public class Driver
 			email = (fileElements[1]);
 			password = (fileElements[2]);
 			userType = (Integer.parseInt(fileElements[3]));
-			while (i<userID) 
+			while (i<userID)
 			{
 				i++;
-				User tempUser = new User(0, null, null, 0);
-				users.add(tempUser);
+				users.add(nullUser);
 			}
 			User tempUser = new User(userID, email, password, userType);
 			users.add(tempUser);
@@ -125,7 +127,7 @@ public class Driver
     int slot;
     String date;
     String paymentStatus;
-	int i = -1;
+	  int i = -1;
 		Scanner read = new Scanner(bookingInfo);
 		while(read.hasNext())
 		{
@@ -138,11 +140,10 @@ public class Driver
       slot = (Integer.parseInt(fileElements[3]));
       date = (fileElements[4]);
       paymentStatus = (fileElements[5]);
-	  while (i<bookingID) 
+	    while (i<bookingID)
 			{
 				i++;
-				Booking tempBooking = new Booking(0, 0, 0, 0, null, null);
-				bookings.add(tempBooking);
+				bookings.add(nullBooking);
 			}
       Booking tempBooking = new Booking(bookingID, facilityID, userID, slot, date, paymentStatus);
       bookings.add(tempBooking);
@@ -152,16 +153,17 @@ public class Driver
 
   public static void readFacility()  throws IOException
   {
-	  
-	PrintWriter  pw = new PrintWriter(new FileWriter(facilityInfo,true));
+
+	  PrintWriter  pw = new PrintWriter(new FileWriter(facilityInfo,true));
 		String lineFromFile;
     String fileElements[];
     int facilityID;
     String facilityName;
     double pricePerHour;
     String decommissionedUntilDate;
-	int i = -1;
+  	int i = 0;
 		Scanner read = new Scanner(facilityInfo);
+    facilities.add(nullFacility);
 		while(read.hasNext())
 		{
 			i++;
@@ -170,12 +172,17 @@ public class Driver
       facilityID = (Integer.parseInt(fileElements[0]));
       facilityName = (fileElements[1]);
       pricePerHour = (Double.parseDouble(fileElements[2]));
-      decommissionedUntilDate = (fileElements[3]);
-	  while (i<facilityID) 
+      if (fileElements.length == 4)
+      {
+        decommissionedUntilDate = (fileElements[3]);
+      } else
+      {
+        decommissionedUntilDate = null;
+      }
+	    while (i<facilityID)
 			{
 				i++;
-				Facility tempFacility = new Facility(0, null, 0.0, null);
-				facilities.add(tempFacility);
+				facilities.add(nullFacility);
 			}
       Facility tempFacility = new Facility(facilityID, facilityName, pricePerHour, decommissionedUntilDate);
       facilities.add(tempFacility);
@@ -194,20 +201,33 @@ public class Driver
 	loggedIn = true;
   }
 
-  public static void createFacility()
+  public static void createFacility() throws IOException
   {
-	String facilityName;
-	PrintWriter  pw = new PrintWriter(new FileWriter(facilityInfo,true));
-	facilityName = (String) JOptionPane.showInputDialog(null,"Please enter the name of the new facility","");
-	for (int i=0; i<facilities.size(); i++)
-	{
-		if (facilityName==facilities.get(i).getFacilityName())
-		{
-			JOptionPane.showMessageDialog(null,"That facility name is already in use.");
-		}
-		break;
-	}
-	JOptionPane.showInputDialog(null,"Please enter the name of the new facility","");
+	  String facilityName;
+    double pricePerHour;
+    boolean available = true;
+    PrintWriter  pw = new PrintWriter(new FileWriter(facilityInfo,true));
+    facilityName = (String) JOptionPane.showInputDialog(null,"Please enter the name of the new facility","");
+	  for (int i=0; i<facilities.size(); i++)
+	  {
+		    if (facilityName.equals(facilities.get(i).getFacilityName()))
+		    {
+			     JOptionPane.showMessageDialog(null,"That facility name is already in use.");
+           available = false;
+           break;
+		    } else
+        {
+           available = true;
+        }
+	  }
+    if (available == true)
+    {
+	    pricePerHour = Double.parseDouble(JOptionPane.showInputDialog(null,"Please enter the price per hour of the new facility","00.00"));
+      Facility tempFacility = new Facility(facilities.size(), facilityName, pricePerHour, null);
+      facilities.add(tempFacility);
+      pw.println(facilities.size()-1 + "," + facilityName + "," + pricePerHour + ",");
+    }
+    pw.close();
   }
 
   public static void viewAvailabilty()
