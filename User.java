@@ -17,7 +17,7 @@ public class User
     {
         return  userID;
     }
-    public void setUserID(String userID)
+    public void setUserID(int userID)
     {
         this.userID = userID;
     }
@@ -33,7 +33,7 @@ public class User
     {
         return  password;
     }
-    public void setPassword(int password)
+    public void setPassword(String password)
     {
         this.password = password;
     }

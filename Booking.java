@@ -19,11 +19,11 @@ public class Booking
 
     public String getPaymentStatus()
     {
-        return  paymentstatus;
+        return  paymentStatus;
     }
     public void setPaymentStatus(String paymentStatus)
     {
-        this.facilityName = facilityName;
+        this.paymentStatus = paymentStatus;
     }
     public String getDate()
     {

@@ -7,7 +7,7 @@ public class Driver
   private static final String[] mainAdmin = { "Register a New User", "Add Facility", "View Facilities", "View User Statements", "Log Out" };
   private static final String[] subAdmin = { "View Availabilty", "Add Booking", "Decommission Facility", "Remove Facility", "Record Payment" };
   private static final String[] mainUser = { "View Bookings","View Statement" };
-  private static final String[] facilities = { };
+  ArrayList<String> facilityList = new ArrayList<String>();
   private static boolean loggedIn = false;
   private static boolean admin = false;
   private static File userInfo = new File ("userInfo.txt");
@@ -83,77 +83,101 @@ public class Driver
    System.exit(0);
   }
 
-  public static void readUser()
+  public static void readUser()  throws IOException
   {
-    Scanner read;
+	  	PrintWriter  pw = new PrintWriter(new FileWriter(userInfo,true));
 		String lineFromFile;
-    String FileElements[];
+		int i = -1;
+    String fileElements[];
     int userID;
     String email;
     int userType;
     String password;
-		read = new Scanner(userInfo);
+		Scanner read = new Scanner(userInfo);
 		while(read.hasNext())
-		{
+		{	
+			i++;
 			lineFromFile = read.nextLine();
-      fileElements = lineFromFile.split(",");
-      userID = (Integer.parseInt(fileElements[0]));
-      email = (fileElements[1])
-      password = (fileElements[2])
-      userType = (Integer.parseInt(fileElements[3]));
-      User tempUser = new User(userID, email, password, userType);
-      users.add(tempUser);
+			fileElements = lineFromFile.split(",");
+			userID = (Integer.parseInt(fileElements[0]));
+			email = (fileElements[1]);
+			password = (fileElements[2]);
+			userType = (Integer.parseInt(fileElements[3]));
+			while (i<userID) 
+			{
+				i++;
+				User tempUser = new User(0, null, null, 0);
+				users.add(tempUser);
+			}
+			User tempUser = new User(userID, email, password, userType);
+			users.add(tempUser);
 		}
 		read.close();
   }
-
-  public static void readBooking()
+  public static void readBooking()  throws IOException
   {
-    Scanner read;
+		PrintWriter  pw = new PrintWriter(new FileWriter(bookingInfo,true));
 		String lineFromFile;
-    String FileElements[];
+    String fileElements[];
     int bookingID;
     int facilityID;
     int userID;
     int slot;
     String date;
     String paymentStatus;
-		read = new Scanner(userInfo);
+	int i = -1;
+		Scanner read = new Scanner(bookingInfo);
 		while(read.hasNext())
 		{
+			i++;
 			lineFromFile = read.nextLine();
       fileElements = lineFromFile.split(",");
       bookingID = (Integer.parseInt(fileElements[0]));
       facilityID = (Integer.parseInt(fileElements[1]));
       userID = (Integer.parseInt(fileElements[2]));
       slot = (Integer.parseInt(fileElements[3]));
-      date = (fileElements[4])
-      paymentStatus = (fileElements[5])
+      date = (fileElements[4]);
+      paymentStatus = (fileElements[5]);
+	  while (i<bookingID) 
+			{
+				i++;
+				Booking tempBooking = new Booking(0, 0, 0, 0, null, null);
+				bookings.add(tempBooking);
+			}
       Booking tempBooking = new Booking(bookingID, facilityID, userID, slot, date, paymentStatus);
       bookings.add(tempBooking);
 		}
 		read.close();
   }
 
-  public static void readFacility()
+  public static void readFacility()  throws IOException
   {
-    Scanner read;
+	  
+	PrintWriter  pw = new PrintWriter(new FileWriter(facilityInfo,true));
 		String lineFromFile;
-    String FileElements[];
+    String fileElements[];
     int facilityID;
     String facilityName;
     double pricePerHour;
     String decommissionedUntilDate;
-		read = new Scanner(userInfo);
+	int i = -1;
+		Scanner read = new Scanner(facilityInfo);
 		while(read.hasNext())
 		{
+			i++;
 			lineFromFile = read.nextLine();
       fileElements = lineFromFile.split(",");
       facilityID = (Integer.parseInt(fileElements[0]));
       facilityName = (fileElements[1]);
       pricePerHour = (Double.parseDouble(fileElements[2]));
-      decommissionedUntilDate = (fileElements[3])
-      Booking tempFacility = new Facility(facilityID, facilityName, pricePerHour, decommissionedUntilDate);
+      decommissionedUntilDate = (fileElements[3]);
+	  while (i<facilityID) 
+			{
+				i++;
+				Facility tempFacility = new Facility(0, null, 0.0, null);
+				facilities.add(tempFacility);
+			}
+      Facility tempFacility = new Facility(facilityID, facilityName, pricePerHour, decommissionedUntilDate);
       facilities.add(tempFacility);
 		}
 		read.close();
@@ -166,12 +190,24 @@ public class Driver
 
   public static void login()
   {
-
+	admin = true;
+	loggedIn = true;
   }
 
   public static void createFacility()
   {
-
+	String facilityName;
+	PrintWriter  pw = new PrintWriter(new FileWriter(facilityInfo,true));
+	facilityName = (String) JOptionPane.showInputDialog(null,"Please enter the name of the new facility","");
+	for (int i=0; i<facilities.size(); i++)
+	{
+		if (facilityName==facilities.get(i).getFacilityName())
+		{
+			JOptionPane.showMessageDialog(null,"That facility name is already in use.");
+		}
+		break;
+	}
+	JOptionPane.showInputDialog(null,"Please enter the name of the new facility","");
   }
 
   public static void viewAvailabilty()
