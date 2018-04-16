@@ -9,7 +9,7 @@ public class Driver
   private static final String[] mainUser = { "View Bookings","View Statement" };
   private static boolean loggedIn = false;
   private static boolean admin = false;
-  public static int currentFacilityNum;
+  public static int currentFacilityNum,a;
   public static int currentUserNum;
   private static File userInfo = new File ("userInfo.txt");
   private static File bookingInfo = new File ("bookings.txt");
@@ -21,6 +21,7 @@ public class Driver
   public static Facility nullFacility = new Facility(0, null, 0.0, null);
   public static User nullUser = new User(0, null, null, 0);
   public static Booking nullBooking = new Booking(0, 0, 0, 0, null, null);
+  
 
   public static void main(String[] args) throws IOException
   {
@@ -193,8 +194,36 @@ public class Driver
         read.close();
   }
 
-  public static void createUser()
-  {
+  public static void createUser() throws IOException
+  { int userID = users.size();
+    String email = JOptionPane.showInputDialog(null,"Please enter the email");
+	String generatedPass = "";
+	int userType = 1;
+	for (int i = 0;i < 6;i++)
+	{ int x =( (int) Math.random() * 5 + 1);
+	    if ( x == 1)
+	    { generatedPass += "a";
+	       }
+	    if ( x == 2)
+	    { generatedPass += "b";
+	       }
+	       if ( x == 3)
+	    { generatedPass += "c";
+	       }
+	       if ( x == 4)
+	    { generatedPass += "d";
+	       }
+	       if ( x == 5)
+	    { generatedPass += "e";
+	       }
+	   }
+    String password = generatedPass;
+    JOptionPane.showMessageDialog(null,"your password is" + generatedPass);
+        User tempUser = new User(userID,email,password,userType);
+        users.add(tempUser);
+        FileWriter fw = new FileWriter(userInfo,true);
+        PrintWriter pw = new PrintWriter(fw);
+        pw.println(userID + "," + email + "," + password + "," + userType);
 
   }
 
@@ -399,7 +428,34 @@ if (!found)
   }
 
   public static void removeFacility()
-  {
+  { String facilityLine;
+    String facilityName, decommissionedUntilDate;
+    int facilityID;
+    double pricePerHour;
+    facilities.get(currentFacilityNum).setFacilityID(0);
+    facilities.get(currentFacilityNum).setFacilityName(null);
+    facilities.get(currentFacilityNum).setPricePerHour(0.0);
+    facilities.get(currentFacilityNum).setDecommissionedUntilDate(null);
+    PrintWriter  pw = new PrintWriter(new FileWriter(facilityInfo));
+    for (int i=0; i<facilities.size(); i++)
+    {
+      facilityName = facilities.get(i).getFacilityName();
+      if ((facilityName != null) && (facilityName.length() > 0))
+      {
+        facilityName = facilities.get(i).getFacilityName();
+        facilityID = facilities.get(i).getFacilityID();
+        pricePerHour = facilities.get(i).getPricePerHour();
+        decommissionedUntilDate = facilities.get(i).getDecommissionedUntilDate();
+        if (decommissionedUntilDate == null)
+        {
+          pw.println(facilityID + "," + facilityName + "," + pricePerHour + ",");
+        } else
+        {
+          pw.println(facilityID + "," + facilityName + "," + pricePerHour + "," + decommissionedUntilDate);
+        }
+      }
+    }
+    pw.close();
 
   }
 
@@ -409,7 +465,27 @@ if (!found)
   }
 
   public static void viewStatement()
-  {
+  {  int x,y,z;
+      double g;
+      String k,n;
+      for (int i = 0;i<bookings.size();i++)
+      { x = bookings.get(i).getUserID();
+        y = bookings.get(i).getFacilityID();
+        k = facilities.get(x).getFacilityName();
+        g = facilities.get(i).getPricePerHour();
+          if (x == currentUserNum)
+          { n = bookings.get(i).getDate();
+            z = bookings.get(i).getSlot();
+            System.out.println("Facility name:" + k);
+            System.out.println("Price : " + g);
+            System.out.println("Date: " + n);
+            System.out.println("Slot: " +z);
+            //must add any recorded payments
+              
+              
+            }
+          
+        }
 
   }
 
