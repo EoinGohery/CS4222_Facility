@@ -1,0 +1,24 @@
+public static void actualDate()
+	{
+
+
+int Year = Integer.parseInt(JOptionPane.showInputDialog(null,"enter Year (YYYY)"));
+			
+			
+		
+int Month = Integer.parseInt(JOptionPane.showInputDialog(null,"enter Month (MM"));
+			
+			
+		
+int Day = Integer.parseInt(JOptionPane.showInputDialog(null,"enter Day (DD)"));
+
+			
+	
+Date date = new Date(Year, Month, Day);
+	  
+		
+System.out.println(date.dateAsString());
+		
+dates.add(date);
+  
+  }
