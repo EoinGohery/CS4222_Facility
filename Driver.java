@@ -246,9 +246,36 @@ public class Driver
 
   }
 
-  public static void removeFacility()
+  public static void removeFacility() throws IOException
   {
-
+    String facilityLine;
+    String facilityName, decommissionedUntilDate;
+    int facilityID;
+    double pricePerHour;
+    facilities.get(currentFacilityNum).setFacilityID(0);
+    facilities.get(currentFacilityNum).setFacilityName(null);
+    facilities.get(currentFacilityNum).setPricePerHour(0.0);
+    facilities.get(currentFacilityNum).setDecommissionedUntilDate(null);
+    PrintWriter  pw = new PrintWriter(new FileWriter(facilityInfo));
+    for (int i=0; i<facilities.size(); i++)
+    {
+      facilityName = facilities.get(i).getFacilityName();
+      if ((facilityName != null) && (facilityName.length() > 0))
+      {
+        facilityName = facilities.get(i).getFacilityName();
+        facilityID = facilities.get(i).getFacilityID();
+        pricePerHour = facilities.get(i).getPricePerHour();
+        decommissionedUntilDate = facilities.get(i).getDecommissionedUntilDate();
+        if (decommissionedUntilDate == null)
+        {
+          pw.println(facilityID + "," + facilityName + "," + pricePerHour + ",");
+        } else
+        {
+          pw.println(facilityID + "," + facilityName + "," + pricePerHour + "," + decommissionedUntilDate);
+        }
+      }
+    }
+    pw.close();
   }
 
   public static void recordPayment()
@@ -276,7 +303,7 @@ public class Driver
     {
       for (int i=0; i<users.size(); i++)
       {
-          if (email.equals(users.get(i).getFacilityName()))
+          if (email.equals(users.get(i).getEmail()))
           {
              currentUserNum = i;
              break;

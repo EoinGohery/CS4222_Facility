@@ -41,7 +41,7 @@ public class Facility
     {
         return  pricePerHour;
     }
-    public void setPricePerHour(int pricePerHour)
+    public void setPricePerHour(double pricePerHour)
     {
         this.pricePerHour = pricePerHour;
     }
