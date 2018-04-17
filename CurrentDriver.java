@@ -1,27 +1,29 @@
 import java.util.*;
 import java.io.*;
 import javax.swing.*;
+import java.text.*;
+import java.util.Date;
 
-public class Driver
+public class CurrentDriver
 {
   private static final String[] mainAdmin = { "Register a New User", "Add Facility", "View Facilities", "View User Statements", "Log Out" };
   private static final String[] subAdmin = { "View Availabilty", "Add Booking", "Decommission Facility", "Remove Facility", "Record Payment" };
   private static final String[] mainUser = { "View Bookings","View Statement" };
+  private static SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+  public static Date now = new Date();
   private static boolean loggedIn = false;
   private static boolean admin = false;
-  public static int currentFacilityNum,a;
+  public static int currentFacilityNum;
   public static int currentUserNum;
   private static File userInfo = new File ("userInfo.txt");
   private static File bookingInfo = new File ("bookings.txt");
   private static File facilityInfo = new File ("facilities.txt");
-  private static File bookingsList = new File ("bookings.txt!");
   public static List<Facility> facilities = new ArrayList<Facility>();
   public static List<User> users = new ArrayList<User>();
   public static List<Booking> bookings = new ArrayList<Booking>();
   public static Facility nullFacility = new Facility(0, null, 0.0, null);
   public static User nullUser = new User(0, null, null, 0);
   public static Booking nullBooking = new Booking(0, 0, 0, 0, null, null);
-  
 
   public static void main(String[] args) throws IOException
   {
@@ -91,35 +93,36 @@ public class Driver
 
   public static void readUser()  throws IOException
   {
-      PrintWriter  pw = new PrintWriter(new FileWriter(userInfo,true));
-      
-	String lineFromFile;
-    int i = -1;
+    PrintWriter  pw = new PrintWriter(new FileWriter(userInfo,true));
+	  String lineFromFile;
+    int i = 0;
     String fileElements[];
     int userID;
     String email;
     int userType;
     String password;
-        Scanner read = new Scanner(userInfo);
-        while(read.hasNext())
-        {
-            i++;
-            lineFromFile = read.nextLine();
-            fileElements = lineFromFile.split(",");
-            userID = (Integer.parseInt(fileElements[0]));
-            email = (fileElements[1]);
-            password = (fileElements[2]);
-            userType = (Integer.parseInt(fileElements[3]));
-            while (i<userID)
-            {
-                i++;
-                users.add(nullUser);
-            }
-            User tempUser = new User(userID, email, password, userType);
-            users.add(tempUser);
-        }
-        read.close();
+    Scanner read = new Scanner(userInfo);
+    users.add(nullUser);
+    while(read.hasNext())
+    {
+      i++;
+      lineFromFile = read.nextLine();
+      fileElements = lineFromFile.split(",");
+      userID = (Integer.parseInt(fileElements[0]));
+      email = (fileElements[1]);
+      password = (fileElements[2]);
+      userType = (Integer.parseInt(fileElements[3]));
+      while (i<userID)
+      {
+        i++;
+        users.add(nullUser);
+      }
+      User tempUser = new User(userID, email, password, userType);
+      users.add(tempUser);
+    }
+    read.close();
   }
+
   public static void readBooking()  throws IOException
   {
         PrintWriter  pw = new PrintWriter(new FileWriter(bookingInfo,true));
@@ -131,7 +134,8 @@ public class Driver
     int slot;
     String date;
     String paymentStatus;
-      int i = -1;
+      int i = 0;
+      bookings.add(nullBooking);
         Scanner read = new Scanner(bookingInfo);
         while(read.hasNext())
         {
@@ -159,7 +163,7 @@ public class Driver
   {
 
       PrintWriter  pw = new PrintWriter(new FileWriter(facilityInfo,true));
-        String lineFromFile;
+        String lineFromFile, date;
     String fileElements[];
     int facilityID;
     String facilityName;
@@ -179,10 +183,19 @@ public class Driver
       if (fileElements.length == 4)
       {
         decommissionedUntilDate = (fileElements[3]);
+        try
+        {
+          Date tempDate = formatter.parse(decommissionedUntilDate);
+          if ((tempDate.before(now)) || (tempDate.equals(now)))
+          {
+            decommissionedUntilDate = null;
+          }
+        } catch (ParseException e) {}
       } else
       {
         decommissionedUntilDate = null;
       }
+
         while (i<facilityID)
             {
                 i++;
@@ -192,6 +205,7 @@ public class Driver
       facilities.add(tempFacility);
         }
         read.close();
+        updateFacilities();
   }
 
   public static void createUser() throws IOException
@@ -263,179 +277,26 @@ public class Driver
   }
 
   public static void viewAvailabilty() throws IOException
-  { String facName,date;
-      int day,month,year,tempDay,tempMonth,tempYear;
-      String tempFacName;
-      facName = JOptionPane.showInputDialog(null,"Enter facility name");
-      boolean exists = false ,valid = false,found = false;
-           Scanner in;
-           in = new Scanner(bookingsList);
-           in.useDelimiter("[,\n]");
-      while(exists == false)
-      { if (facilities.contains(facName))
-          { exists = true;
-            }
-          else{ JOptionPane.showMessageDialog(null,"That facility does not exist,please reEnter");
-                facName = JOptionPane.showInputDialog(null,"Enter name of facility you would like to book");
-            }
-        }
-       day  = Integer.parseInt(JOptionPane.showInputDialog(null,"Enter day of month"));
-     month = Integer.parseInt(JOptionPane.showInputDialog(null,"Enter number of month,eg March = 3"));
-     year = Integer.parseInt(JOptionPane.showInputDialog(null,"Enter year,latest is 2020"));
-     while (!valid)
-     { if (day >= 1 || day <= 31 || year >= 2018 || year <= 2020 || month <= 12 || month >= 1)
-         { valid = true;
-             if (month == 2 && year == 2020 && day > 29)
-             { JOptionPane.showMessageDialog(null,"Leap year 2020 there is 29 days in Feb");
-                 JOptionPane.showMessageDialog(null,"Invalid input try again");
-                  day  = Integer.parseInt(JOptionPane.showInputDialog(null,"Enter day of month"));
-                   month = Integer.parseInt(JOptionPane.showInputDialog(null,"Enter number of month,eg March = 3"));
-                    year = Integer.parseInt(JOptionPane.showInputDialog(null,"Enter year,latest is 2020"));
-                 valid = false;
-                }
-                else if (month == 2 && year != 2020 && day > 28)
-                { JOptionPane.showMessageDialog(null,"There are 28 days in Feb");
-                     JOptionPane.showMessageDialog(null,"Invalid input try again");
-                  day  = Integer.parseInt(JOptionPane.showInputDialog(null,"Enter day of month"));
-                   month = Integer.parseInt(JOptionPane.showInputDialog(null,"Enter number of month,eg March = 3"));
-                    year = Integer.parseInt(JOptionPane.showInputDialog(null,"Enter year,latest is 2020"));
-                 valid = false;
-                }
-             
-            }
-         JOptionPane.showMessageDialog(null,"Invalid input try again");
-         day  = Integer.parseInt(JOptionPane.showInputDialog(null,"Enter day of month"));
-         month = Integer.parseInt(JOptionPane.showInputDialog(null,"Enter number of month,eg March = 3"));
-         year = Integer.parseInt(JOptionPane.showInputDialog(null,"Enter year,latest is 2020"));
-         
-  }
-  if (bookingsList.length() == 0 )
-  { JOptionPane.showMessageDialog(null,"file is empty");
-    }
-    else{
-           while (in.hasNext() && !found)
-           { tempDay = Integer.parseInt(in.next());
-             tempMonth = Integer.parseInt(in.next());
-             tempYear = Integer.parseInt(in.next());
-             tempFacName = in.next();
-             if (tempDay == day && tempMonth == month && tempYear == year && tempFacName.equals(facName))
-             { JOptionPane.showMessageDialog(null,"this facility is booked for this day");
-                 found = true;
-                }
-                
-}
-if (!found)
-{ JOptionPane.showMessageDialog(null,"Facility is available on this date");
-}
-}
-}
-  public static void addBooking() throws IOException
-  { String facName,tempFacName;
-      FileWriter fw = new FileWriter(bookingsList,true);
-      PrintWriter pw = new PrintWriter(fw);
-      String date;
-      int day,month,year;
-      facName = JOptionPane.showInputDialog(null,"Enter name of facility you would like to book");
-      boolean exists = false,valid = false;
-      while(exists == false)
-      { if (facilities.contains(facName))
-          { exists = true;
-            }
-          else{ JOptionPane.showMessageDialog(null,"That facility does not exist,please reEnter");
-                facName = JOptionPane.showInputDialog(null,"Enter name of facility you would like to book");
-            }
-        }
-     day  = Integer.parseInt(JOptionPane.showInputDialog(null,"Enter day of month"));
-     month = Integer.parseInt(JOptionPane.showInputDialog(null,"Enter number of month,eg March = 3"));
-     year = Integer.parseInt(JOptionPane.showInputDialog(null,"Enter year,latest is 2020"));
-     while (!valid)
-     { if (day >= 1 || day <= 31 || year >= 2018 || year <= 2020 || month <= 12 || month >= 1)
-         { valid = true;
-             if (month == 2 && year == 2020 && day > 29)
-             { JOptionPane.showMessageDialog(null,"Leap year 2020 there is 29 days in Feb");
-                 JOptionPane.showMessageDialog(null,"Invalid input try again");
-                  day  = Integer.parseInt(JOptionPane.showInputDialog(null,"Enter day of month"));
-                   month = Integer.parseInt(JOptionPane.showInputDialog(null,"Enter number of month,eg March = 3"));
-                    year = Integer.parseInt(JOptionPane.showInputDialog(null,"Enter year,latest is 2020"));
-                 valid = false;
-                }
-                else if (month == 2 && year != 2020 && day > 28)
-                { JOptionPane.showMessageDialog(null,"There are 28 days in Feb");
-                     JOptionPane.showMessageDialog(null,"Invalid input try again");
-                  day  = Integer.parseInt(JOptionPane.showInputDialog(null,"Enter day of month"));
-                   month = Integer.parseInt(JOptionPane.showInputDialog(null,"Enter number of month,eg March = 3"));
-                    year = Integer.parseInt(JOptionPane.showInputDialog(null,"Enter year,latest is 2020"));
-                 valid = false;
-                }
-             
-            }
-         JOptionPane.showMessageDialog(null,"Invalid input try again");
-         day  = Integer.parseInt(JOptionPane.showInputDialog(null,"Enter day of month"));
-         month = Integer.parseInt(JOptionPane.showInputDialog(null,"Enter number of month,eg March = 3"));
-         year = Integer.parseInt(JOptionPane.showInputDialog(null,"Enter year,latest is 2020"));
-        }
-         if(bookingsList.length() != 0)
-         { int tempDay,tempMonth,tempYear;
-            boolean available = false;
-           Scanner in;
-           in = new Scanner(bookingsList);
-           in.useDelimiter("[,\n]");
-           while (in.hasNext() && !available)
-           { tempDay = Integer.parseInt(in.next());
-             tempMonth = Integer.parseInt(in.next());
-             tempYear = Integer.parseInt(in.next());
-             tempFacName = in.next();
-             if (tempDay == day && tempMonth == month && tempYear == year && tempFacName.equals(facName))
-             { JOptionPane.showMessageDialog(null,"this facility is booked for this day");
-                 day  = Integer.parseInt(JOptionPane.showInputDialog(null,"Enter day of month"));
-                 month = Integer.parseInt(JOptionPane.showInputDialog(null,"Enter number of month,eg March = 3"));
-                 year = Integer.parseInt(JOptionPane.showInputDialog(null,"Enter year,latest is 2020"));
-     while (!valid)
-     { if (day >= 1 || day <= 31 || year >= 2018 || year <= 2020 || month <= 12 || month >= 1)
-         { if (month == 2 && year == 2020 && day > 29)
-             { JOptionPane.showMessageDialog(null,"Leap year 2020 there is 29 days in Feb");
-                 
-                }
-                else if (month == 2 && year != 2020 && day > 28)
-                { JOptionPane.showMessageDialog(null,"There are 28 days in Feb");
-                    
-                }
-             valid = true;
-            }
-         JOptionPane.showMessageDialog(null,"Invalid input try again");
-         day  = Integer.parseInt(JOptionPane.showInputDialog(null,"Enter day of month"));
-         month = Integer.parseInt(JOptionPane.showInputDialog(null,"Enter number of month,eg March = 3"));
-         year = Integer.parseInt(JOptionPane.showInputDialog(null,"Enter year,latest is 2020"));
-        }
-                }
-                else { pw.println(day + "," + month + "," + year + "," + facName);
-                }
-               
-            }
-            }
-        if (bookings.size() == 0)
-        { pw.println(day + "," + month + "," + year + "," + facName);
-            
-        }
-         
-         }
-
-  
-
-  public static void decommissionFacility()
   {
 
   }
 
-  public static void removeFacility()
-  { String facilityLine;
-    String facilityName, decommissionedUntilDate;
+  public static void addBooking() throws IOException
+  {
+
+  }
+
+  public static void decommissionFacility() throws IOException
+  {
+    String facilityLine, facilityName, decommissionedUntilDate;
     int facilityID;
     double pricePerHour;
-    facilities.get(currentFacilityNum).setFacilityID(0);
-    facilities.get(currentFacilityNum).setFacilityName(null);
-    facilities.get(currentFacilityNum).setPricePerHour(0.0);
-    facilities.get(currentFacilityNum).setDecommissionedUntilDate(null);
+    decommissionedUntilDate = (String) JOptionPane.showInputDialog(null,"On what date do you wish the facility to be recommissioned. Format: dd/mm/yyyy","//");
+    while (!isDateValid(decommissionedUntilDate))
+    {
+    decommissionedUntilDate = (String) JOptionPane.showInputDialog(null,"On what date do you wish the facility to be recommissioned. Format: dd/mm/yyyy","//");
+    }
+    facilities.get(currentFacilityNum).setDecommissionedUntilDate(decommissionedUntilDate);
     PrintWriter  pw = new PrintWriter(new FileWriter(facilityInfo));
     for (int i=0; i<facilities.size(); i++)
     {
@@ -456,7 +317,43 @@ if (!found)
       }
     }
     pw.close();
+  }
 
+  public static void removeFacility() throws IOException
+  {
+
+    facilities.get(currentFacilityNum).setFacilityID(0);
+    facilities.get(currentFacilityNum).setFacilityName(null);
+    facilities.get(currentFacilityNum).setPricePerHour(0.0);
+    facilities.get(currentFacilityNum).setDecommissionedUntilDate(null);
+    updateFacilities();
+  }
+
+  public static void updateFacilities() throws IOException
+  {
+    String facilityLine;
+    String facilityName, decommissionedUntilDate;
+    int facilityID;
+    double pricePerHour;
+    PrintWriter  pw = new PrintWriter(new FileWriter(facilityInfo));
+    for (int i=0; i<facilities.size(); i++)
+    {
+      facilityName = facilities.get(i).getFacilityName();
+      if ((facilityName != null) && (facilityName.length() > 0))
+      {
+        facilityID = facilities.get(i).getFacilityID();
+        pricePerHour = facilities.get(i).getPricePerHour();
+        decommissionedUntilDate = facilities.get(i).getDecommissionedUntilDate();
+        if (decommissionedUntilDate == null)
+        {
+          pw.println(facilityID + "," + facilityName + "," + pricePerHour + ",");
+        } else
+        {
+          pw.println(facilityID + "," + facilityName + "," + pricePerHour + "," + decommissionedUntilDate);
+        }
+      }
+    }
+    pw.close();
   }
 
   public static void recordPayment()
@@ -481,10 +378,10 @@ if (!found)
             System.out.println("Date: " + n);
             System.out.println("Slot: " +z);
             //must add any recorded payments
-              
-              
+
+
             }
-          
+
         }
 
   }
@@ -518,12 +415,13 @@ if (!found)
 
   public static void chooseFacility() throws IOException
   {
-      String facilityName;
+      String facilityName, decommissionedUntilDate;
       ArrayList<String> facilityList = new ArrayList<String>();
       for (int i=0; i<facilities.size(); i++)
       {
         facilityName = facilities.get(i).getFacilityName();
-        if ((facilityName != null) && (facilityName.length() > 0))
+        decommissionedUntilDate = facilities.get(i).getDecommissionedUntilDate();
+        if ((facilityName != null) && (facilityName.length() > 0) && (decommissionedUntilDate == null))
         {
           facilityList.add(facilityName);
         }
@@ -548,6 +446,33 @@ if (!found)
 
   public static void viewBookings()
   {
+    int x,c;
+    String y,z;
+    for (int i = 0;i <bookings.size();i++)
+    {
+      x = bookings.get(i).getFacilityID();
+      y = bookings.get(i).getDate();
+      z = facilities.get(x).getFacilityName();
+      c = bookings.get(i).getSlot();
+      System.out.println("Facility name: " + z + "date: " + y + "time: " + c+8 + ":00 - " + c+9 + ":00");
+    }
+   }
 
+  public static boolean isDateValid(String date)
+  {
+    Calendar cal = Calendar.getInstance();
+    try
+    {
+      Date checkDate = formatter.parse(date);
+      formatter.setLenient(false);
+      formatter.parse(date);
+      cal.setTime(checkDate);
+      return true;
+    }
+    catch (ParseException e)
+    {
+      JOptionPane.showMessageDialog(null, "Invalid date");
+      return false;
+    }
   }
 }
