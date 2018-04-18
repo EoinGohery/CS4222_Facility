@@ -362,28 +362,27 @@ public class CurrentDriver
   }
 
   public static void viewStatement()
-  {  int x,y,z;
-      double g;
-      String k,n;
-      for (int i = 0;i<bookings.size();i++)
-      { x = bookings.get(i).getUserID();
-        y = bookings.get(i).getFacilityID();
-        k = facilities.get(x).getFacilityName();
-        g = facilities.get(i).getPricePerHour();
-          if (x == currentUserNum)
-          { n = bookings.get(i).getDate();
-            z = bookings.get(i).getSlot();
-            System.out.println("Facility name:" + k);
-            System.out.println("Price : " + g);
-            System.out.println("Date: " + n);
-            System.out.println("Slot: " +z);
-            //must add any recorded payments
-
-
-            }
-
-        }
-
+  {
+    int x,y,z;
+    double g;
+    String k,n;
+    for (int i = 0;i<bookings.size();i++)
+    {
+      x = bookings.get(i).getUserID();
+      y = bookings.get(i).getFacilityID();
+      k = facilities.get(x).getFacilityName();
+      g = facilities.get(i).getPricePerHour();
+      if (x == currentUserNum)
+      {
+        n = bookings.get(i).getDate();
+        z = bookings.get(i).getSlot();
+        System.out.println("Facility name:" + k);
+        System.out.println("Price : " + g);
+        System.out.println("Date: " + n);
+        System.out.println("Slot: " +z);
+        //must add any recorded payments
+      }
+    }
   }
 
   public static void chooseUser()
