@@ -356,6 +356,31 @@ public class CurrentDriver
     pw.close();
   }
 
+  public static void updateBookings() throws IOException
+  {
+    int bookingID;
+    int facilityID;
+    int userID;
+    int slot;
+    String date;
+    String paymentStatus;
+    PrintWriter  pw = new PrintWriter(new FileWriter(bookingInfo));
+    for (int i=0; i<bookings.size(); i++)
+    {
+      bookingID = bookings.get(i).getBookingID();
+      if (bookingID > 0)
+      {
+        facilityID = bookings.get(i).getFacilityID();
+        userID = bookings.get(i).getUserID();
+        slot = bookings.get(i).getSlot();
+        date = bookings.get(i).getDate();
+        paymentStatus = bookings.get(i).getPaymentStatus();
+        pw.println(bookingID + "," + facilityID + "," + facilityName + "," + userID + "," + slot + "," + date + "," + paymentStatus);
+      }
+    }
+    pw.close();
+  }
+
   public static void recordPayment()
   {
 
@@ -450,10 +475,13 @@ public class CurrentDriver
     for (int i = 0;i <bookings.size();i++)
     {
       x = bookings.get(i).getFacilityID();
-      y = bookings.get(i).getDate();
-      z = facilities.get(x).getFacilityName();
-      c = bookings.get(i).getSlot();
-      System.out.println("Facility name: " + z + "date: " + y + "time: " + c+8 + ":00 - " + c+9 + ":00");
+      if (x > 0)
+      {
+        y = bookings.get(i).getDate();
+        z = facilities.get(x).getFacilityName();
+        c = bookings.get(i).getSlot();
+        System.out.println("Facility name: " + z + "date: " + y + "time: " + c+8 + ":00 - " + c+9 + ":00");
+      }
     }
    }
 
