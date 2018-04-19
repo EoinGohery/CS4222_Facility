@@ -388,7 +388,7 @@ public class CurrentDriver
 
   public static void viewStatement()
   {
-    int x,y,z;
+    int x,y,z,q;
     double g;
     String k,n;
     for (int i = 0;i<bookings.size();i++)
@@ -397,15 +397,19 @@ public class CurrentDriver
       y = bookings.get(i).getFacilityID();
       k = facilities.get(x).getFacilityName();
       g = facilities.get(i).getPricePerHour();
-      if (x == currentUserNum)
+      q = bookings.get(i).getBookingID();
+      if (q > 0)
       {
-        n = bookings.get(i).getDate();
-        z = bookings.get(i).getSlot();
-        System.out.println("Facility name:" + k);
-        System.out.println("Price : " + g);
-        System.out.println("Date: " + n);
-        System.out.println("Slot: " +z);
-        //must add any recorded payments
+        if (x == currentUserNum)
+        {
+          n = bookings.get(i).getDate();
+          z = bookings.get(i).getSlot();
+          System.out.println("Facility name:" + k);
+          System.out.println("Price : " + g);
+          System.out.println("Date: " + n);
+          System.out.println("Slot: " +z);
+          //must add any recorded payments
+        }
       }
     }
   }
