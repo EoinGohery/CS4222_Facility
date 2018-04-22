@@ -2,7 +2,6 @@ import java.util.*;
 import java.io.*;
 import javax.swing.*;
 import java.text.*;
-import java.util.Date;
 
 public class CurrentDriver
 {
@@ -375,15 +374,35 @@ public class CurrentDriver
         slot = bookings.get(i).getSlot();
         date = bookings.get(i).getDate();
         paymentStatus = bookings.get(i).getPaymentStatus();
-        pw.println(bookingID + "," + facilityID + "," + facilityName + "," + userID + "," + slot + "," + date + "," + paymentStatus);
+        pw.println(bookingID + "," + facilityID + "," + userID + "," + slot + "," + date + "," + paymentStatus);
       }
     }
     pw.close();
   }
 
-  public static void recordPayment()
+  public static void recordPayment() throws IOException
   {
-
+    int bookingNum;
+    int bookingID, facilityID, userID, slot;
+    String date, paymentStatus, facilityName;
+    for (int i=0; i<bookings.size(); i++)
+    {
+      bookingID = bookings.get(i).getBookingID();
+      facilityID = bookings.get(i).getFacilityID();
+      userID = bookings.get(i).getUserID();
+      slot = bookings.get(i).getSlot();
+      date = bookings.get(i).getDate();
+      paymentStatus = bookings.get(i).getPaymentStatus();
+      facilityName = facilities.get(facilityID).getFacilityName();
+      if (paymentStatus == "N")
+      {
+        System.out.println("Number " + bookingID + ": " + facilityName);
+        System.out.println("Date: " + date + " Time: " + (slot+8) + ":00 - " + (slot+9) + ":00");
+      }
+    }
+    bookingNum = Integer.parseInt(JOptionPane.showInputDialog(null,"What is the number of the booking that you would like to mark as paid?",""));
+    bookings.get(bookingNum).setPaymentStatus("Y");
+    updateBookings();
   }
 
   public static void viewStatement()
