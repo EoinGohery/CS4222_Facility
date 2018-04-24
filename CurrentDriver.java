@@ -5,16 +5,17 @@ import java.text.*;
 
 public class CurrentDriver
 {
-  private static final String[] mainAdmin = { "Register a New User", "Add Facility", "View Facilities", "View User Statements", "Log Out" };
-  private static final String[] subAdmin = { "View Availabilty", "Add Booking", "Decommission Facility", "Remove Facility", "Record Payment" };
+  private static final String[] mainAdmin = { "Register a New User", "Add Facility", "View Facilities", "Record Payment",  "View User Statements", "Log Out" };
+  private static final String[] subAdmin = { "View Availabilty", "Add Booking", "Decommission Facility", "Remove Facility"};
   private static final String[] mainUser = { "View Bookings","View Statement" };
+  private static final String[] slots = { " 9:00 - 10:00","10:00 - 11:00", "11:00 - 12:00", "12:00 - 13:00", "13:00 - 14:00", "14:00 - 15:00", "15:00 - 16:00", "16:00 - 17:00", "17:00 - 18:00" };
   private static SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
   public static Date now = new Date();
   private static boolean loggedIn = false;
   private static boolean admin = false;
   public static int currentFacilityNum;
   public static int currentUserNum;
-  private static File userInfo = new File ("userInfo.txt");
+  private static File userInfo = new File ("users.txt");
   private static File bookingInfo = new File ("bookings.txt");
   private static File facilityInfo = new File ("facilities.txt");
   public static List<Facility> facilities = new ArrayList<Facility>();
@@ -42,7 +43,9 @@ public class CurrentDriver
           createUser();
         }else if(section=="Add Facility") {
           createFacility();
-        }else if(section=="View Facilities") {
+        } else if(section =="Record Payment") {
+            recordPayment();
+        } else if(section=="View Facilities") {
           chooseFacility();
           boolean sub = true;
           while (sub) {
@@ -59,9 +62,6 @@ public class CurrentDriver
               } else if(subSection =="Remove Facility")
               {
                 removeFacility();
-              } else if(subSection =="Record Payment")
-              {
-                recordPayment();
               } else  {
                   sub = false;
               }
@@ -208,12 +208,14 @@ public class CurrentDriver
   }
 
   public static void createUser() throws IOException
-  { int userID = users.size();
+  {
+    int userID = users.size();
     String email = JOptionPane.showInputDialog(null,"Please enter the email");
 	String generatedPass = "";
 	int userType = 1;
 	for (int i = 0;i < 6;i++)
-	{ int x =( (int) Math.random() * 5 + 1);
+	{
+    int x =( (int) Math.random() * 5 + 1);
 	    if ( x == 1)
 	    { generatedPass += "a";
 	       }
@@ -231,13 +233,12 @@ public class CurrentDriver
 	       }
 	   }
     String password = generatedPass;
-    JOptionPane.showMessageDialog(null,"your password is" + generatedPass);
+    JOptionPane.showMessageDialog(null,"your password is " + generatedPass);
         User tempUser = new User(userID,email,password,userType);
         users.add(tempUser);
-        FileWriter fw = new FileWriter(userInfo,true);
-        PrintWriter pw = new PrintWriter(fw);
+        PrintWriter pw = new PrintWriter(new FileWriter(userInfo,true));
         pw.println(userID + "," + email + "," + password + "," + userType);
-
+        pw.close();
   }
 
   public static void login()
@@ -277,12 +278,93 @@ public class CurrentDriver
 
   public static void viewAvailabilty() throws IOException
   {
+    String start, end;
+    start = (String) JOptionPane.showInputDialog(null,"On what date would you like to start viewing? Format: dd/mm/yyyy","//");
+    while (!isDateValid(start))
+    {
+      start = (String) JOptionPane.showInputDialog(null,"On what date would you like to start viewing? Format: dd/mm/yyyy","//");
+    }
+    end = (String) JOptionPane.showInputDialog(null,"On what date would you like to finish viewing? Format: dd/mm/yyyy","//");
+    while (!isDateValid(end))
+    {
+      end = (String) JOptionPane.showInputDialog(null,"On what date would you like to finish viewing? Format: dd/mm/yyyy","//");
+    }
+    try
+    {
+    Date startDate = formatter.parse(start);
+    Date endDate = formatter.parse(end);
+    shiftDate(endDate);
+    while (startDate.before(endDate))
+    {
+      System.out.println("       " + formatter.format(startDate));
+      for (int slot=0; slot<slots.length; slot++)
+      {
+          for (int i=0; i<bookings.size(); i++)
+          {
+            if (bookings.get(i).getDate() != null)
+            {
+              Date checkDate = formatter.parse(bookings.get(i).getDate());
+              if (bookings.get(i).getSlot()==slot+1 && bookings.get(i).getFacilityID()==currentFacilityNum && startDate.equals(checkDate))
+              {
+                System.out.println(slots[slot] + ": Unavailable");
+                break;
+              } else if (i==bookings.size()-1)
+              {
+                System.out.println(slots[slot] + ": Available");
+              }
+            }
+          }
+        }
+        shiftDate(startDate);
+        System.out.println();
+      }
+      } catch (ParseException e) {}
+    }
 
+
+  public static void shiftDate(Date d)
+  {
+    Calendar c = Calendar.getInstance();
+    c.setTime(d);
+    c.add(Calendar.DATE, 1);
+    d.setTime(c.getTimeInMillis());
   }
 
   public static void addBooking() throws IOException
   {
-
+    String chosenDate;
+    int slot = 0;
+    boolean valid = false;
+    chooseUser();
+    chosenDate = (String) JOptionPane.showInputDialog(null,"On what date do you wish to make the booking. Format: dd/mm/yyyy","//");
+    while (!isDateValid(chosenDate))
+    {
+      chosenDate = (String) JOptionPane.showInputDialog(null,"On what date do you wish to make the booking. Format: dd/mm/yyyy","//");
+    }
+    while (!valid)
+    {
+      slot = (Arrays.asList(slots).indexOf((String) JOptionPane.showInputDialog(null, "Choose a time.","",JOptionPane.QUESTION_MESSAGE, null, slots, slots[0]))) +1;
+      for (int i=0; i<bookings.size(); i++)
+      {
+        if (bookings.get(i).getDate() != null)
+        {
+          try
+          {
+            Date existingDate = formatter.parse(bookings.get(i).getDate());
+            if (bookings.get(i).getSlot()==slot && bookings.get(i).getFacilityID()==currentFacilityNum && existingDate.equals(chosenDate))
+            {
+              JOptionPane.showMessageDialog(null,"The Facility is currently booked for this date and time.");
+              valid = false;
+              break;
+            }
+            valid = true;
+          } catch (ParseException e) {}
+        }
+      }
+    }
+    Booking tempBooking = new Booking(bookings.size(), currentFacilityNum, currentUserNum, slot,  chosenDate, "N");
+    bookings.add(tempBooking);
+    updateBookings();
   }
 
   public static void decommissionFacility() throws IOException
@@ -394,10 +476,11 @@ public class CurrentDriver
       date = bookings.get(i).getDate();
       paymentStatus = bookings.get(i).getPaymentStatus();
       facilityName = facilities.get(facilityID).getFacilityName();
-      if (paymentStatus == "N")
+      if (paymentStatus != "Y" && paymentStatus != null)
       {
         System.out.println("Number " + bookingID + ": " + facilityName);
-        System.out.println("Date: " + date + " Time: " + (slot+8) + ":00 - " + (slot+9) + ":00");
+        System.out.println("Date: " + date +  " Time: " + slots[slot-1]);
+        System.out.println();
       }
     }
     bookingNum = Integer.parseInt(JOptionPane.showInputDialog(null,"What is the number of the booking that you would like to mark as paid?",""));
@@ -409,13 +492,15 @@ public class CurrentDriver
   {
     int x,y,z,q;
     double g;
-    String k,n;
+    double toBePaid = 0.0;
+    double total = 0.0;
+    String k,n,m;
     for (int i = 0;i<bookings.size();i++)
     {
       x = bookings.get(i).getUserID();
       y = bookings.get(i).getFacilityID();
-      k = facilities.get(x).getFacilityName();
-      g = facilities.get(i).getPricePerHour();
+      k = facilities.get(y).getFacilityName();
+      g = facilities.get(y).getPricePerHour();
       q = bookings.get(i).getBookingID();
       if (q > 0)
       {
@@ -423,14 +508,18 @@ public class CurrentDriver
         {
           n = bookings.get(i).getDate();
           z = bookings.get(i).getSlot();
-          System.out.println("Facility name:" + k);
-          System.out.println("Price : " + g);
-          System.out.println("Date: " + n);
-          System.out.println("Slot: " +z);
-          //must add any recorded payments
+          m = bookings.get(i).getPaymentStatus();
+          System.out.println("Facility name: " + k + " Price : " + g + " Date: " + n + " Time: " + slots[z-1] + " Paid: " + m);
+          total += g;
+          if (m != "Y" && m != null)
+          {
+            toBePaid += g;
+          }
         }
       }
     }
+    System.out.println("        Total: " + total);
+    System.out.println("        To Be Paid: " + toBePaid);
   }
 
   public static void chooseUser()
@@ -440,23 +529,32 @@ public class CurrentDriver
     for (int i=0; i<users.size(); i++)
     {
       email = users.get(i).getEmail();
-      userList.add(email);
-    }
-    Object[] userArray = userList.toArray();
-    email = (String) JOptionPane.showInputDialog(null, "Menu","",JOptionPane.QUESTION_MESSAGE, null, userArray, userArray[0]);
-    if ((email != null) && (email.length() > 0))
-    {
-      for (int i=0; i<users.size(); i++)
+      if (email != null)
       {
-          if (email.equals(users.get(i).getEmail()))
-          {
-             currentUserNum = i;
-             break;
-          }
+        userList.add(email);
       }
+    }
+    if (userList.size() == 0)
+    {
+      JOptionPane.showMessageDialog(null, "No users have been registered yet.");
     } else
     {
-      return;
+      Object[] userArray = userList.toArray();
+      email = (String) JOptionPane.showInputDialog(null, "Users:","",JOptionPane.QUESTION_MESSAGE, null, userArray, userArray[0]);
+      if ((email != null) && (email.length() > 0))
+      {
+        for (int i=0; i<users.size(); i++)
+        {
+            if (email.equals(users.get(i).getEmail()))
+            {
+              currentUserNum = i;
+              break;
+           }
+        }
+      } else
+      {
+        return;
+      }
     }
   }
 
@@ -473,22 +571,28 @@ public class CurrentDriver
           facilityList.add(facilityName);
         }
       }
-      Object[] facilityArray = facilityList.toArray();
-      facilityName = (String) JOptionPane.showInputDialog(null, "Menu","",JOptionPane.QUESTION_MESSAGE, null, facilityArray, facilityArray[0]);
-      if ((facilityName != null) && (facilityName.length() > 0))
+      if (facilityList.size() == 0)
       {
-        for (int i=0; i<facilities.size(); i++)
-          {
-                if (facilityName.equals(facilities.get(i).getFacilityName()))
-                {
-                     currentFacilityNum = i;
-               break;
-                }
-          }
+        JOptionPane.showMessageDialog(null, "No facilities have been created yet.");
       } else
       {
-        return;
-      }
+        Object[] facilityArray = facilityList.toArray();
+        facilityName = (String) JOptionPane.showInputDialog(null, "Menu","",JOptionPane.QUESTION_MESSAGE, null, facilityArray, facilityArray[0]);
+        if ((facilityName != null) && (facilityName.length() > 0))
+        {
+          for (int i=0; i<facilities.size(); i++)
+            {
+                  if (facilityName.equals(facilities.get(i).getFacilityName()))
+                  {
+                      currentFacilityNum = i;
+                      break;
+                  }
+            }
+       } else
+       {
+         return;
+       }
+     }
   }
 
   public static void viewBookings()
@@ -503,7 +607,7 @@ public class CurrentDriver
         y = bookings.get(i).getDate();
         z = facilities.get(x).getFacilityName();
         c = bookings.get(i).getSlot();
-        System.out.println("Facility name: " + z + "date: " + y + "time: " + c+8 + ":00 - " + c+9 + ":00");
+        System.out.println("Facility name: " + z + "Date: " + y + " Time: " + slots[c-1]);
       }
     }
    }
