@@ -459,8 +459,8 @@ public class Driver
             }
           } catch (ParseException e) {}
         }
+        valid = true;
       }
-      valid = true;
     }
     Booking tempBooking = new Booking(bookings.size(), currentFacilityNum, currentUserNum, slot,  chosenDate, "N");
     bookings.add(tempBooking);
