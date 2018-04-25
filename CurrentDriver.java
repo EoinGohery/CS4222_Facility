@@ -27,6 +27,11 @@ public class CurrentDriver
 
   public static void main(String[] args) throws IOException
   {
+    /**
+    * The main menu is a JOptionPane drop down menu which compares the chosen option with Strings
+    * Before the menu, the program will load the file into ArrayLists with the readUser, readBooking and readFacility methods.
+    * There are two seperate menus, one for the user and one for the admin.
+    */
     readUser();
     readBooking();
     readFacility();
@@ -55,10 +60,12 @@ public class CurrentDriver
                 viewAvailabilty();
               } else if(subSection=="Add Booking")
               {
+                chooseUser();
                 addBooking();
               } else if(subSection =="Decommission Facility")
               {
                 decommissionFacility();
+                sub = false;
               } else if(subSection =="Remove Facility")
               {
                 removeFacility();
@@ -92,6 +99,11 @@ public class CurrentDriver
 
   public static void readUser()  throws IOException
   {
+    /**
+    * The method reads through the file and if there is a gap in the user number(eg userID 1 then userID 3)
+    * a nullUser will be placed to ensure that the userID will always be equal to the position of the user in the users ArrayList.
+    * A nullUser is placed at the start of the Array for the same reason.
+    */
     PrintWriter  pw = new PrintWriter(new FileWriter(userInfo,true));
 	  String lineFromFile;
     int i = 0;
@@ -124,8 +136,13 @@ public class CurrentDriver
 
   public static void readBooking()  throws IOException
   {
-        PrintWriter  pw = new PrintWriter(new FileWriter(bookingInfo,true));
-        String lineFromFile;
+    /**
+    * The method reads through the file and if there is a gap in the booking number(eg bookingID 1 then booingID 3)
+    * a nullBooking will be placed to ensure that the bookingID will always be equal to the position of the booking in the bookings ArrayList.
+    * A nullBooking is placed at the start of the Array for the same reason.
+    */
+    PrintWriter  pw = new PrintWriter(new FileWriter(bookingInfo,true));
+    String lineFromFile;
     String fileElements[];
     int bookingID;
     int facilityID;
@@ -133,13 +150,13 @@ public class CurrentDriver
     int slot;
     String date;
     String paymentStatus;
-      int i = 0;
-      bookings.add(nullBooking);
-        Scanner read = new Scanner(bookingInfo);
-        while(read.hasNext())
-        {
-            i++;
-            lineFromFile = read.nextLine();
+    int i = 0;
+    bookings.add(nullBooking);
+    Scanner read = new Scanner(bookingInfo);
+    while(read.hasNext())
+    {
+      i++;
+      lineFromFile = read.nextLine();
       fileElements = lineFromFile.split(",");
       bookingID = (Integer.parseInt(fileElements[0]));
       facilityID = (Integer.parseInt(fileElements[1]));
@@ -147,34 +164,41 @@ public class CurrentDriver
       slot = (Integer.parseInt(fileElements[3]));
       date = (fileElements[4]);
       paymentStatus = (fileElements[5]);
-        while (i<bookingID)
-            {
-                i++;
-                bookings.add(nullBooking);
-            }
+      while (i<bookingID)
+      {
+        i++;
+        bookings.add(nullBooking);
+      }
       Booking tempBooking = new Booking(bookingID, facilityID, userID, slot, date, paymentStatus);
       bookings.add(tempBooking);
-        }
-        read.close();
+    }
+    read.close();
   }
 
   public static void readFacility()  throws IOException
   {
-
-      PrintWriter  pw = new PrintWriter(new FileWriter(facilityInfo,true));
-        String lineFromFile, date;
+    /**
+    * The method reads through the file and if there is a gap in the facility number(eg facilityID 1 then facilityID 3)
+    * a nullFacility will be placed to ensure that the facilityID will always be equal to the position of the facility in the facilities ArrayList.
+    * A nullFacility is placed at the start of the Array for the same reason.
+    * This method will also check if and of the decommisioned facilities can be recomisioned
+    * by checking if the decommissionedUntilDate is equal to or before the current date.
+    * The method then runs the updateFacilities mehtod which will delete the facilities file and print a new one based on the ArrayList.
+    */
+    PrintWriter  pw = new PrintWriter(new FileWriter(facilityInfo,true));
+    String lineFromFile, date;
     String fileElements[];
     int facilityID;
     String facilityName;
     double pricePerHour;
     String decommissionedUntilDate;
     int i = 0;
-        Scanner read = new Scanner(facilityInfo);
+    Scanner read = new Scanner(facilityInfo);
     facilities.add(nullFacility);
-        while(read.hasNext())
-        {
-            i++;
-            lineFromFile = read.nextLine();
+    while(read.hasNext())
+    {
+      i++;
+      lineFromFile = read.nextLine();
       fileElements = lineFromFile.split(",");
       facilityID = (Integer.parseInt(fileElements[0]));
       facilityName = (fileElements[1]);
@@ -194,51 +218,41 @@ public class CurrentDriver
       {
         decommissionedUntilDate = null;
       }
-
-        while (i<facilityID)
-            {
-                i++;
-                facilities.add(nullFacility);
-            }
+      while (i<facilityID)
+      {
+        i++;
+        facilities.add(nullFacility);
+      }
       Facility tempFacility = new Facility(facilityID, facilityName, pricePerHour, decommissionedUntilDate);
       facilities.add(tempFacility);
-        }
-        read.close();
-        updateFacilities();
+    }
+    read.close();
+    updateFacilities();
   }
 
   public static void createUser() throws IOException
   {
+    /**
+    * This method requsts a user email and will automatically generate a 6 character pawword of leter(higher and lower) anf numbers
+    * The details of the user are then added to the array list and printed to file.
+    */
     int userID = users.size();
     String email = JOptionPane.showInputDialog(null,"Please enter the email");
-	String generatedPass = "";
-	int userType = 1;
-	for (int i = 0;i < 6;i++)
-	{
-    int x =( (int) Math.random() * 5 + 1);
-	    if ( x == 1)
-	    { generatedPass += "a";
-	       }
-	    if ( x == 2)
-	    { generatedPass += "b";
-	       }
-	       if ( x == 3)
-	    { generatedPass += "c";
-	       }
-	       if ( x == 4)
-	    { generatedPass += "d";
-	       }
-	       if ( x == 5)
-	    { generatedPass += "e";
-	       }
-	   }
-    String password = generatedPass;
-    JOptionPane.showMessageDialog(null,"your password is " + generatedPass);
-        User tempUser = new User(userID,email,password,userType);
-        users.add(tempUser);
-        PrintWriter pw = new PrintWriter(new FileWriter(userInfo,true));
-        pw.println(userID + "," + email + "," + password + "," + userType);
-        pw.close();
+	  String generatedPass = "";
+	  int userType = 1;
+	  String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    Random rnd = new Random();
+    StringBuilder sb = new StringBuilder(6);
+    for( int i = 0; i < 6; i++ )
+    {
+      sb.append( AB.charAt( rnd.nextInt(AB.length()) ) );
+    }
+    generatedPass = sb.toString();
+    JOptionPane.showMessageDialog(null,"your password is " + generatedPass); User tempUser = new User(userID,email,generatedPass,userType);
+    users.add(tempUser);
+    PrintWriter pw = new PrintWriter(new FileWriter(userInfo,true));
+    pw.println(userID + "," + email + "," + generatedPass + "," + userType);
+    pw.close();
   }
 
   public static void login()
@@ -249,26 +263,32 @@ public class CurrentDriver
 
   public static void createFacility() throws IOException
   {
-      String facilityName;
+    /**
+    * This mehtod cretes a new facility by requesting a facility name and price.
+    * If the facility name is a;ready in use the program will request a differnet name.
+    * The facility is then added to the ArrayList and printed to the end of the file.
+    * decommissionedUntilDate is set as null to start as it does not make sense for a new facility to be immediatly decommisioned.
+    */
+    String facilityName;
     double pricePerHour;
     boolean available = true;
     PrintWriter  pw = new PrintWriter(new FileWriter(facilityInfo,true));
     facilityName = (String) JOptionPane.showInputDialog(null,"Please enter the name of the new facility","");
-      for (int i=0; i<facilities.size(); i++)
+    for (int i=0; i<facilities.size(); i++)
+    {
+      if (facilityName.equals(facilities.get(i).getFacilityName()))
       {
-            if (facilityName.equals(facilities.get(i).getFacilityName()))
-            {
-                 JOptionPane.showMessageDialog(null,"That facility name is already in use.");
-           available = false;
-           break;
-            } else
-        {
-           available = true;
-        }
+         JOptionPane.showMessageDialog(null,"That facility name is already in use.");
+         available = false;
+         break;
+      } else
+      {
+         available = true;
       }
+    }
     if (available == true)
     {
-        pricePerHour = Double.parseDouble(JOptionPane.showInputDialog(null,"Please enter the price per hour of the new facility","00.00"));
+      pricePerHour = Double.parseDouble(JOptionPane.showInputDialog(null,"Please enter the price per hour of the new facility","00.00"));
       Facility tempFacility = new Facility(facilities.size(), facilityName, pricePerHour, null);
       facilities.add(tempFacility);
       pw.println(facilities.size()-1 + "," + facilityName + "," + pricePerHour + ",");
@@ -278,6 +298,14 @@ public class CurrentDriver
 
   public static void viewAvailabilty() throws IOException
   {
+    /**
+    * View Availabilty will display all time slots for a particular date range for a single facilty.
+    * Next to each of the slots will be status that idicates wheter the facility is available or Unavailable.
+    * To ensure the dates are valid the dates inputed are run through the isDateValid mehtod.
+    * The Availabilty is checked by checking the date slot and faciltyID.
+    * If all three are in use ny a single booking then tat slot is Unavailable.
+    * The start date is incremented by one day until the date is equal to the endDate using the shiftDate method
+    */
     String start, end;
     start = (String) JOptionPane.showInputDialog(null,"On what date would you like to start viewing? Format: dd/mm/yyyy","//");
     while (!isDateValid(start))
@@ -324,6 +352,10 @@ public class CurrentDriver
 
   public static void shiftDate(Date d)
   {
+    /**
+    * This method cretes a date one day after the inputted date.
+    * the inputted date is then set to equal the new date and is returned.
+    */
     Calendar c = Calendar.getInstance();
     c.setTime(d);
     c.add(Calendar.DATE, 1);
@@ -332,10 +364,16 @@ public class CurrentDriver
 
   public static void addBooking() throws IOException
   {
+    /**
+    * This method adds a booking for the facilty and user chosen in the chooseUser and chooseFacility methods.
+    * The date chosen by the user is ran through the isDateValid method.
+    * The user is then shown a drop down menu of all timeslots.
+    * the method checks to ensure that the booking is not a nullBooking
+    * The date slot and facilityID are all compared to check if the facilty is available at that time.
+    */
     String chosenDate;
     int slot = 0;
     boolean valid = false;
-    chooseUser();
     chosenDate = (String) JOptionPane.showInputDialog(null,"On what date do you wish to make the booking. Format: dd/mm/yyyy","//");
     while (!isDateValid(chosenDate))
     {
@@ -369,6 +407,12 @@ public class CurrentDriver
 
   public static void decommissionFacility() throws IOException
   {
+    /**
+    * The facilty chosen through the choose facilty method will be decommisioned until the date inputted by the user.
+    * the date is run through the isDateValid mehtod.
+    * The decommissionedUntilDate of that particular facility is changed from null to the date set.
+    * The update facility method is then run which will rewrite the file with the new decommissionedUntilDate
+    */
     String facilityLine, facilityName, decommissionedUntilDate;
     int facilityID;
     double pricePerHour;
@@ -402,7 +446,10 @@ public class CurrentDriver
 
   public static void removeFacility() throws IOException
   {
-
+    /**
+    * this will immediatly change the values of the facilities so that the facility is made into a nullFacility.
+    * The updateFacilities method is then run which will rewrite the new facilties file without that facility.
+    */
     facilities.get(currentFacilityNum).setFacilityID(0);
     facilities.get(currentFacilityNum).setFacilityName(null);
     facilities.get(currentFacilityNum).setPricePerHour(0.0);
@@ -412,6 +459,10 @@ public class CurrentDriver
 
   public static void updateFacilities() throws IOException
   {
+    /**
+    * The update facilities file will delete the current facilities file and create a new one.
+    * the method will print the details of any non nullFacility facilty.
+    */
     String facilityLine;
     String facilityName, decommissionedUntilDate;
     int facilityID;
@@ -439,6 +490,10 @@ public class CurrentDriver
 
   public static void updateBookings() throws IOException
   {
+    /**
+    * The update bookings file will delete the current bookings file and create a new one.
+    * the method will print the details of any non nullBooking booking.
+    */
     int bookingID;
     int facilityID;
     int userID;
@@ -464,6 +519,11 @@ public class CurrentDriver
 
   public static void recordPayment() throws IOException
   {
+    /**
+    * this method displays all unpaid bookings and requests the user to pick one.
+    * the Payment status is then cghanged from N to Y
+    * The update booking method is then run the update the file.
+    */
     int bookingNum;
     int bookingID, facilityID, userID, slot;
     String date, paymentStatus, facilityName;
@@ -490,6 +550,12 @@ public class CurrentDriver
 
   public static void viewStatement()
   {
+    /**
+    * all bookings by a chosen user are displayed with the faciltyID replaced with the facility name.
+    * there are two money counters.
+    * one for the total cost of all the bookings and another for the amount left to be paid.
+    * the status of whether a booking is paid or not is dosplayed.
+    */
     int x,y,z,q;
     double g;
     double toBePaid = 0.0;
@@ -524,6 +590,12 @@ public class CurrentDriver
 
   public static void chooseUser()
   {
+    /**
+    * The choose user will read through all the user and add the emails to an arraylist.
+    * the arraylsit is then turned into an array and displayed in a drop down menus
+    * when a user is chosen the method will then read through the user objects again until the correct user email is found.
+    * the userID of that email is then set as the global variable currentUserNum
+    */
     String email;
     ArrayList<String> userList = new ArrayList<String>();
     for (int i=0; i<users.size(); i++)
@@ -560,6 +632,12 @@ public class CurrentDriver
 
   public static void chooseFacility() throws IOException
   {
+    /**
+    * The choose facilty will read through all the facilties and add the facilityName to an arraylist.
+    * the arraylsit is then turned into an array and displayed in a drop down menu
+    * when a facilty is chosen the method will then read through the facilty objects again until the correct facilityName is found.
+    * the facilityID of that facilty is then set as the global variable currentFacilityNum
+    */
       String facilityName, decommissionedUntilDate;
       ArrayList<String> facilityList = new ArrayList<String>();
       for (int i=0; i<facilities.size(); i++)
@@ -597,23 +675,35 @@ public class CurrentDriver
 
   public static void viewBookings()
   {
-    int x,c;
-    String y,z;
+    /**
+    * This method simply displays the details of all bookings.
+    * the facility id and user id are replaced with the facility name and user email
+    */
+    int x,c,m;
+    String y,z,l;
     for (int i = 0;i <bookings.size();i++)
     {
       x = bookings.get(i).getFacilityID();
+      m = bookings.get(i).getUserID();
       if (x > 0)
       {
+        l = users.get(m).getEmail();
         y = bookings.get(i).getDate();
         z = facilities.get(x).getFacilityName();
         c = bookings.get(i).getSlot();
-        System.out.println("Facility name: " + z + "Date: " + y + " Time: " + slots[c-1]);
+        System.out.println("Facility name: " + z + " User: "+ l + " Date: " + y + " Time: " + slots[c-1]);
       }
     }
    }
 
   public static boolean isDateValid(String date)
   {
+    /**
+    * This method when inputed with a string will check if the string is in the correct format.
+    * the method also sanity checks the date to ensure that is a real dates
+    * eg to prevent 32/13/2018
+    * The method then returns a boolean
+    */
     Calendar cal = Calendar.getInstance();
     try
     {
