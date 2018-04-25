@@ -235,11 +235,20 @@ public class Driver
   public static void createUser() throws IOException
   {
     /**
-    * This method requsts a user email and will automatically generate a 6 character pawword of leter(higher and lower) anf numbers
+    * This method requsts a user email and will automatically generate a 6 character pawword of leter(higher and lower) and numbers
     * The details of the user are then added to the array list and printed to file.
+    * String email input must contain an "@" and "." in order to pass as valid.
     */
+	boolean valid = false;
     int userID = users.size();
-    String email = JOptionPane.showInputDialog(null,"Please enter the email");
+	String email = ""; 
+	while(!valid) {
+		email = JOptionPane.showInputDialog(null,"Please enter the email");
+	if(email.matches(".*@.*" + ".*..*"))
+	{
+		valid = true;
+	}
+	}
 	  String generatedPass = "";
 	  int userType = 1;
 	  String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
@@ -329,7 +338,7 @@ public class Driver
     * This mehtod cretes a new facility by requesting a facility name and price.
     * If the facility name is a;ready in use the program will request a differnet name.
     * The facility is then added to the ArrayList and printed to the end of the file.
-    * decommissionedUntilDate is set as null to start as it does not make sense for a new facility to be immediatly decommisioned.
+    * decommissionedUntilDate is set as null to start as it does not make sense for a new facility to be immidietaly decommisioned.
     */
     String facilityName;
     double pricePerHour;
@@ -365,7 +374,7 @@ public class Driver
     * Next to each of the slots will be status that idicates wheter the facility is available or Unavailable.
     * To ensure the dates are valid the dates inputed are run through the isDateValid mehtod.
     * The Availabilty is checked by checking the date slot and faciltyID.
-    * If all three are in use ny a single booking then tat slot is Unavailable.
+    * If all three are in use in a single booking then that slot is Unavailable.
     * The start date is incremented by one day until the date is equal to the endDate using the shiftDate method
     */
     String start, end;
@@ -619,7 +628,7 @@ public class Driver
     * all bookings by a chosen user are displayed with the faciltyID replaced with the facility name.
     * there are two money counters.
     * one for the total cost of all the bookings and another for the amount left to be paid.
-    * the status of whether a booking is paid or not is dosplayed.
+    * the status of whether a booking is paid or not is displayed.
     */
     int x,y,z,q;
     double g;
