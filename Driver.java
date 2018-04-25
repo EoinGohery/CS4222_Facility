@@ -457,10 +457,10 @@ public class Driver
               valid = false;
               break;
             }
-            valid = true;
           } catch (ParseException e) {}
         }
       }
+      valid = true;
     }
     Booking tempBooking = new Booking(bookings.size(), currentFacilityNum, currentUserNum, slot,  chosenDate, "N");
     bookings.add(tempBooking);
@@ -666,7 +666,7 @@ public class Driver
     for (int i=0; i<users.size(); i++)
     {
       email = users.get(i).getEmail();
-      if (email != null)
+      if (email != null && users.get(i).getUserType()==1)
       {
         userList.add(email);
       }
